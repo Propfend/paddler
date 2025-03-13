@@ -126,6 +126,12 @@ enum Commands {
         /// Address of the management server that the dashboard will connect to
         management_addr: SocketAddr,
     },
+    /// Downloads models from Huggingface
+    Download {
+        #[arg(long)]
+        /// Name of the model to be downloaded
+        model_name: String,
+    },
 }
 
 fn main() -> Result<()> {
@@ -181,6 +187,7 @@ fn main() -> Result<()> {
         ),
         #[cfg(feature = "ratatui_dashboard")]
         Some(Commands::Dashboard { management_addr }) => cmd::dashboard::handle(management_addr),
+        Some(Commands::Download { model_name }) => cmd::download::handle(model_name.to_owned()),
         None => Ok(()),
     }
 }

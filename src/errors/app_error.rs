@@ -47,6 +47,9 @@ pub enum AppError {
 
     #[error("RwLock poison error: {0}")]
     RwLockPoisonError(String),
+
+    #[error("Model download error: {0}")]
+    ModelDownloadError(#[from] hf_hub::api::sync::ApiError),
 }
 
 impl From<&str> for AppError {
