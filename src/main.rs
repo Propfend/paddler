@@ -1,6 +1,7 @@
 use clap::{Parser, Subcommand};
 use std::{
     net::{SocketAddr, ToSocketAddrs},
+    path::PathBuf,
     time::Duration,
 };
 
@@ -67,7 +68,7 @@ enum Commands {
         #[arg(long)]
         /// API key for the llama.cpp instance (optional)
         llamacpp_api_key: Option<String>,
- 
+
         #[arg(long, value_parser = parse_socket_addr)]
         /// Address of the management server that the agent will report to
         management_addr: SocketAddr,
@@ -131,6 +132,18 @@ enum Commands {
         #[arg(long)]
         /// Name of the model to be downloaded
         model_name: String,
+
+        #[arg(long)]
+        /// Name of the file to be downloaded
+        filename: String,
+
+        #[arg(long)]
+        /// Token of the file to be downloaded
+        token: Option<String>,
+
+        #[arg(long)]
+        /// Path to the downloaded file
+        model_path: Option<PathBuf>,
     },
 }
 
@@ -187,7 +200,17 @@ fn main() -> Result<()> {
         ),
         #[cfg(feature = "ratatui_dashboard")]
         Some(Commands::Dashboard { management_addr }) => cmd::dashboard::handle(management_addr),
-        Some(Commands::Download { model_name }) => cmd::download::handle(model_name.to_owned()),
+        Some(Commands::Download {
+            model_name,
+            filename,
+            token,
+            model_path,
+        }) => cmd::download::handle(
+            model_name.to_owned(),
+            filename.to_owned(),
+            token.to_owned(),
+            model_path.to_owned(),
+        ),
         None => Ok(()),
     }
 }
