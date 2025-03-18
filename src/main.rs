@@ -1,7 +1,7 @@
 use clap::{Parser, Subcommand};
+use serde::{Deserialize, Deserializer};
 use std::{
     net::{SocketAddr, ToSocketAddrs},
-    path::PathBuf,
     time::Duration,
 };
 
@@ -44,6 +44,35 @@ fn parse_socket_addr(arg: &str) -> Result<SocketAddr> {
     }
 }
 
+fn deserialize_external_socket_addr<'de, D>(
+    deserializer: D,
+) -> std::result::Result<Option<SocketAddr>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let addr_str: String = Deserialize::deserialize(deserializer)?;
+
+    Ok(Some(parse_socket_addr(&addr_str).unwrap()))
+}
+
+fn deserialize_local_socket_addr<'de, D>(
+    deserializer: D,
+) -> std::result::Result<SocketAddr, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let addr_str: String = Deserialize::deserialize(deserializer)?;
+
+    Ok(parse_socket_addr(&addr_str).unwrap())
+}
+
+fn parse_driver<T>(arg: &str) -> Result<T>
+where
+    for<'a> T: Deserialize<'a>,
+{
+    serde_json::from_str(arg).map_err(|e| format!("Invalid config driver JSON: {}", e).into())
+}
+
 #[derive(Parser)]
 #[command(arg_required_else_help(true), version, about, long_about = None)]
 /// Stateful load balancer for llama.cpp
@@ -57,19 +86,6 @@ enum Commands {
     /// Monitors llama.cpp instance and reports their status to the balancer
     Agent {
         #[arg(long, value_parser = parse_socket_addr)]
-        /// Address of llama.cpp instance that the balancer will forward requests to. If not
-        /// provided, then `--local-llamacpp-addr` will be used
-        external_llamacpp_addr: Option<SocketAddr>,
-
-        #[arg(long, value_parser = parse_socket_addr)]
-        /// Address of the local llama.cpp instance that the agent will monitor
-        local_llamacpp_addr: SocketAddr,
-
-        #[arg(long)]
-        /// API key for the llama.cpp instance (optional)
-        llamacpp_api_key: Option<String>,
-
-        #[arg(long, value_parser = parse_socket_addr)]
         /// Address of the management server that the agent will report to
         management_addr: SocketAddr,
 
@@ -77,9 +93,9 @@ enum Commands {
         /// Interval (in seconds) at which the agent will report the status of the llama.cpp instance
         monitoring_interval: Duration,
 
-        #[arg(long)]
-        /// Name of the agent (optional)
-        name: Option<String>,
+        /// Driver for the running backend server
+        #[arg(long, value_parser = parse_driver::<BackendDriver>)]
+        backend_driver: BackendDriver,
     },
     /// Balances incoming requests to llama.cpp instances and optionally provides a web dashboard
     Balancer {
@@ -127,23 +143,54 @@ enum Commands {
         /// Address of the management server that the dashboard will connect to
         management_addr: SocketAddr,
     },
-    /// Downloads models from Huggingface
-    Download {
-        #[arg(long)]
-        /// Name of the model to be downloaded
-        model_name: String,
+}
+
+#[derive(Clone, Deserialize, Debug, Subcommand)]
+#[serde(tag = "type", rename_all = "lowercase")]
+enum BackendDriver {
+    Ollama {
+        #[arg(long, value_parser = parse_socket_addr)]
+        #[serde(deserialize_with = "deserialize_external_socket_addr", default)]
+        /// Address of llama.cpp instance that the balancer will forward requests to. If not
+        /// provided, then --local-llamacpp-addr will be used
+        external_ollama_addr: Option<SocketAddr>,
+
+        #[arg(long, value_parser = parse_socket_addr)]
+        #[serde(deserialize_with = "deserialize_local_socket_addr")]
+        /// Address of the local llama.cpp instance that the agent will monitor
+        local_ollama_addr: SocketAddr,
 
         #[arg(long)]
-        /// Name of the file to be downloaded
-        filename: String,
+        /// API key for the llama.cpp instance (optional)
+        ollama_api_key: Option<String>,
 
         #[arg(long)]
-        /// Token of the file to be downloaded
-        token: Option<String>,
+        /// Max number of slots to be used by ollama instance
+        max_slots: usize,
 
         #[arg(long)]
-        /// Path to the downloaded file
-        model_path: Option<PathBuf>,
+        /// Name of the agent (optional)
+        name: Option<String>,
+    },
+    Llamacpp {
+        #[arg(long, value_parser = parse_socket_addr)]
+        #[serde(deserialize_with = "deserialize_external_socket_addr", default)]
+        /// Address of llama.cpp instance that the balancer will forward requests to. If not
+        /// provided, then --local-llamacpp-addr will be used
+        external_llamacpp_addr: Option<SocketAddr>,
+
+        #[arg(long, value_parser = parse_socket_addr)]
+        #[serde(deserialize_with = "deserialize_local_socket_addr")]
+        /// Address of the local llama.cpp instance that the agent will monitor
+        local_llamacpp_addr: SocketAddr,
+
+        #[arg(long)]
+        /// API key for the llama.cpp instance (optional)
+        llamacpp_api_key: Option<String>,
+
+        #[arg(long)]
+        /// Name of the agent (optional)
+        name: Option<String>,
     },
 }
 
@@ -154,22 +201,13 @@ fn main() -> Result<()> {
 
     match &cli.command {
         Some(Commands::Agent {
-            external_llamacpp_addr,
-            local_llamacpp_addr,
-            llamacpp_api_key,
             management_addr,
             monitoring_interval,
-            name,
+            backend_driver,
         }) => cmd::agent::handle(
-            match external_llamacpp_addr {
-                Some(addr) => addr.to_owned(),
-                None => local_llamacpp_addr.to_owned(),
-            },
-            local_llamacpp_addr.to_owned(),
-            llamacpp_api_key.to_owned(),
             management_addr.to_owned(),
             monitoring_interval.to_owned(),
-            name.to_owned(),
+            backend_driver.to_owned(),
         ),
         Some(Commands::Balancer {
             management_addr,
@@ -200,17 +238,6 @@ fn main() -> Result<()> {
         ),
         #[cfg(feature = "ratatui_dashboard")]
         Some(Commands::Dashboard { management_addr }) => cmd::dashboard::handle(management_addr),
-        Some(Commands::Download {
-            model_name,
-            filename,
-            token,
-            model_path,
-        }) => cmd::download::handle(
-            model_name.to_owned(),
-            filename.to_owned(),
-            token.to_owned(),
-            model_path.to_owned(),
-        ),
         None => Ok(()),
     }
 }

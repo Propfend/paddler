@@ -13,11 +13,11 @@ use pingora::server::ListenFds;
 
 use crate::{
     balancer::status_update::StatusUpdate, errors::result::Result,
-    llamacpp::llamacpp_client::LlamacppClient,
+    llamacpp::llamacpp_client::LlamacppClient, BackendDriver,
 };
 
 pub struct MonitoringService {
-    external_llamacpp_addr: SocketAddr,
+    external_backend_addr: SocketAddr,
     llamacpp_client: LlamacppClient,
     monitoring_interval: Duration,
     name: Option<String>,
@@ -26,14 +26,43 @@ pub struct MonitoringService {
 
 impl MonitoringService {
     pub fn new(
-        external_llamacpp_addr: SocketAddr,
+        backend_driver: BackendDriver,
         llamacpp_client: LlamacppClient,
         monitoring_interval: Duration,
-        name: Option<String>,
         status_update_tx: Sender<Bytes>,
     ) -> Result<Self> {
+        let (name, external_backend_addr) = match backend_driver {
+            BackendDriver::Llamacpp {
+                external_llamacpp_addr,
+                local_llamacpp_addr,
+                llamacpp_api_key: _,
+                name,
+            } => {
+                let addr = match external_llamacpp_addr {
+                    Some(addr) => addr,
+                    None => local_llamacpp_addr,
+                };
+
+                (name, addr)
+            }
+            BackendDriver::Ollama {
+                external_ollama_addr,
+                local_ollama_addr,
+                ollama_api_key: _,
+                max_slots: _,
+                name,
+            } => {
+                let addr = match external_ollama_addr {
+                    Some(addr) => addr,
+                    None => local_ollama_addr,
+                };
+
+                (name, addr)
+            }
+        };
+
         Ok(MonitoringService {
-            external_llamacpp_addr,
+            external_backend_addr,
             llamacpp_client,
             monitoring_interval,
             name,
@@ -46,7 +75,7 @@ impl MonitoringService {
             Ok(slots_response) => Ok(StatusUpdate::new(
                 self.name.to_owned(),
                 None,
-                self.external_llamacpp_addr.to_owned(),
+                self.external_backend_addr.to_owned(),
                 slots_response.is_authorized,
                 slots_response.is_slot_endpoint_enabled,
                 slots_response.slots,
@@ -54,7 +83,7 @@ impl MonitoringService {
             Err(err) => Ok(StatusUpdate::new(
                 self.name.to_owned(),
                 Some(err.to_string()),
-                self.external_llamacpp_addr.to_owned(),
+                self.external_backend_addr.to_owned(),
                 None,
                 None,
                 vec![],

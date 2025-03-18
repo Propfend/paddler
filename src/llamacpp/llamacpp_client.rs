@@ -1,10 +1,11 @@
 use reqwest::header;
-use std::{net::SocketAddr, time::Duration};
+use std::time::Duration;
 use url::Url;
 
 use crate::{
     errors::result::Result,
     llamacpp::{slot::Slot, slots_response::SlotsResponse},
+    BackendDriver,
 };
 
 pub struct LlamacppClient {
@@ -13,7 +14,7 @@ pub struct LlamacppClient {
 }
 
 impl LlamacppClient {
-    pub fn new(addr: SocketAddr, api_key: Option<String>) -> Result<Self> {
+    pub fn new(backend_driver: BackendDriver) -> Result<Self> {
         let mut builder = reqwest::Client::builder().timeout(Duration::from_secs(3));
         let mut headers = header::HeaderMap::new();
 
@@ -21,6 +22,28 @@ impl LlamacppClient {
             header::ACCEPT,
             header::HeaderValue::from_static("application/json"),
         );
+
+        let (api_key, fetch_endpoint) = match backend_driver {
+            BackendDriver::Llamacpp {
+                external_llamacpp_addr: _,
+                local_llamacpp_addr,
+                llamacpp_api_key,
+                name: _,
+            } => (
+                llamacpp_api_key,
+                &format!("http://{}/slots", local_llamacpp_addr),
+            ),
+            BackendDriver::Ollama {
+                external_ollama_addr: _,
+                local_ollama_addr,
+                ollama_api_key,
+                max_slots: _,
+                name: _,
+            } => (
+                ollama_api_key,
+                &format!("http://{}", local_ollama_addr),
+            ),
+        };
 
         if let Some(api_key_value) = api_key {
             let mut auth_value =
@@ -35,7 +58,7 @@ impl LlamacppClient {
 
         Ok(Self {
             client: builder.build()?,
-            slots_endpoint_url: Url::parse(&format!("http://{}/slots", addr))?.to_string(),
+            slots_endpoint_url: Url::parse(fetch_endpoint)?.to_string(),
         })
     }
 
