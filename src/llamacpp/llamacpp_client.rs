@@ -39,10 +39,7 @@ impl LlamacppClient {
                 ollama_api_key,
                 max_slots: _,
                 name: _,
-            } => (
-                ollama_api_key,
-                &format!("http://{}", local_ollama_addr),
-            ),
+            } => (ollama_api_key, &format!("http://{}", local_ollama_addr)),
         };
 
         if let Some(api_key_value) = api_key {
@@ -73,17 +70,20 @@ impl LlamacppClient {
             reqwest::StatusCode::OK => Ok(SlotsResponse {
                 is_authorized: Some(true),
                 is_slot_endpoint_enabled: Some(true),
-                slots: response.json::<Vec<Slot>>().await?,
+                slots: match self.slots_endpoint_url.contains("slots") {
+                    true => Some(response.json::<Vec<Slot>>().await?),
+                    false => None,
+                },
             }),
             reqwest::StatusCode::UNAUTHORIZED => Ok(SlotsResponse {
                 is_authorized: Some(false),
                 is_slot_endpoint_enabled: None,
-                slots: vec![],
+                slots: Some(vec![]),
             }),
             reqwest::StatusCode::NOT_IMPLEMENTED => Ok(SlotsResponse {
                 is_authorized: None,
                 is_slot_endpoint_enabled: Some(false),
-                slots: vec![],
+                slots: Some(vec![]),
             }),
             _ => Err("Unexpected response status".into()),
         }

@@ -86,7 +86,7 @@ impl MonitoringService {
                 self.external_backend_addr.to_owned(),
                 None,
                 None,
-                vec![],
+                Some(vec![]),
             )),
         }
     }

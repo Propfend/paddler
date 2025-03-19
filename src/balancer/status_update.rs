@@ -22,9 +22,15 @@ impl StatusUpdate {
         external_llamacpp_addr: SocketAddr,
         is_authorized: Option<bool>,
         is_slots_endpoint_enabled: Option<bool>,
-        slots: Vec<Slot>,
+        slots: Option<Vec<Slot>>,
     ) -> Self {
-        let idle_slots_count = slots.iter().filter(|slot| !slot.is_processing).count();
+        let (slots, idle_slots_count) = match slots {
+            Some(slots) => (
+                slots.clone(),
+                slots.iter().filter(|slot| !slot.is_processing).count(),
+            ),
+            None => (vec![], 0),
+        };
 
         Self {
             agent_name,
