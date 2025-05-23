@@ -32,12 +32,12 @@ jobs:
           toolchain: stable
 
       - name: build static
-        run: |
-          make
+        run: make
 
-      - name: install cargo-deb
+      - name: install cargo-deb (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: cargo install cargo-deb
+
       - name: build binary (Windows)
         if: matrix.os == 'windows-latest'
         run: mv target/release/paddler.exe ${{ matrix.artifact_name }}
@@ -45,14 +45,15 @@ jobs:
 
       - name: build package (Linux)
         if: matrix.os == 'ubuntu-latest'
-        run: cargo deb --no-build --output ${{ matrix.artifact_name }}.deb --maintainer "Intentt <paddler@intentt.io>"
+        run: |
+          cargo deb --no-build --output ${{ matrix.artifact_name }}.deb --maintainer "Intentt <paddler@intentt.io>"
+          mv target/release/paddler ${{ matrix.artifact_name }}
         shell: bash
 
       - name: build binary (macOS)
         if: matrix.os == 'macos-latest'
         run: mv target/release/paddler ${{ matrix.artifact_name }}
         shell: bash
-
 
       - name: determine tag type
         id: tag_type
@@ -66,11 +67,20 @@ jobs:
           fi
         shell: bash
 
-      - name: upload binaries to release
+      - name: upload artifacts
         if: steps.tag_type.outputs.tag_type != 'INVALID_TAG'
         uses: svenstaro/upload-release-action@v2
         with:
-          file: ${{ matrix.os == 'ubuntu-latest' && format('{0}.deb', matrix.artifact_name) || matrix.artifact_name }}
+          file: ${{ matrix.artifact_name }}
+          overwrite: true
+          prerelease: ${{ steps.tag_type.outputs.tag_type == 'PRE_RELEASE_TAG' }}
+          tag: ${{ github.ref }}
+
+      - name: upload deb package (Linux)
+        if: matrix.os == 'ubuntu-latest' && steps.tag_type.outputs.tag_type != 'INVALID_TAG'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: ${{ matrix.deb_artifact }}
           overwrite: true
           prerelease: ${{ steps.tag_type.outputs.tag_type == 'PRE_RELEASE_TAG' }}
           tag: ${{ github.ref }}
