@@ -17,7 +17,7 @@ jobs:
             artifact_name: paddler-bin-linux-amd64
 
           - os: windows-latest
-            artifact_name: paddler-bin-windows-amd64.exe
+            artifact_name: paddler-bin-windows-amd64
 
           - os: macos-latest
             artifact_name: paddler-bin-macos-amd64
@@ -39,7 +39,7 @@ jobs:
         run: |
           cargo build --features web_dashboard --release
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            mv target/release/paddler.exe ${{ matrix.artifact_name }}
+            mv target/release/paddler.exe ${{ matrix.artifact_name }}.exe
           else
             mv target/release/paddler ${{ matrix.artifact_name }}
           fi
