@@ -31,28 +31,20 @@ jobs:
         with:
           toolchain: stable
 
-      - name: build static
+      - name: build project
         run: make
 
-      - name: install cargo-deb (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: cargo install cargo-deb
-
-      - name: build binary (Windows)
-        if: matrix.os == 'windows-latest'
-        run: mv target/release/paddler.exe ${{ matrix.artifact_name }}
-        shell: bash
-
-      - name: build package (Linux)
-        if: matrix.os == 'ubuntu-latest'
+      - name: Build the binary
         run: |
-          cargo deb --no-build --output ${{ matrix.artifact_name }}.deb --maintainer "Intentt <paddler@intentt.io>"
-          mv target/release/paddler ${{ matrix.artifact_name }}
-        shell: bash
-
-      - name: build binary (macOS)
-        if: matrix.os == 'macos-latest'
-        run: mv target/release/paddler ${{ matrix.artifact_name }}
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            cargo install cargo-deb
+            cargo deb --no-build --output ${{ matrix.artifact_name }}.deb --maintainer "Intentt <paddler@intentt.io>"
+            mv target/release/paddler ${{ matrix.artifact_name }}
+          elif [ "${{ matrix.os }}" == "windows-latest" ]; then
+            mv target/release/paddler.exe ${{ matrix.artifact_name }}
+          else
+            mv target/release/paddler ${{ matrix.artifact_name }}
+          fi
         shell: bash
 
       - name: determine tag type
@@ -80,7 +72,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && steps.tag_type.outputs.tag_type != 'INVALID_TAG'
         uses: svenstaro/upload-release-action@v2
         with:
-          file: ${{ matrix.deb_artifact }}
+          file: ${{ matrix.artifact_name }}.deb
           overwrite: true
           prerelease: ${{ steps.tag_type.outputs.tag_type == 'PRE_RELEASE_TAG' }}
           tag: ${{ github.ref }}
