@@ -29,7 +29,7 @@ jobs:
           sudo dpkg -i goreleaser.deb
         
       - name: release
-        run: goreleaser release
+        run: goreleaser release GITUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
       # - name: checkout code
       #   uses: actions/checkout@v4
 
