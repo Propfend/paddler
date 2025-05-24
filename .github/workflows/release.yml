@@ -24,7 +24,9 @@ jobs:
 
     steps:      
       - name: Download zig
-        run: sudo snap install zig --classic --beta
+        run: |
+          sudo snap install zig --classic --beta
+          sudo apt-get install pkg-config libssl-dev
 
       - uses: actions/checkout@v3
       - name: Run GoReleaser
