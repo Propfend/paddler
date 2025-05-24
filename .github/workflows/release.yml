@@ -13,66 +13,73 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-22.04
+          - os: ubuntu-latest
             artifact_name: paddler-bin-linux-amd64
 
-          - os: windows-latest
-            artifact_name: paddler-bin-windows-amd64.exe
+          # - os: windows-latest
+          #   artifact_name: paddler-bin-windows-amd64.exe
 
-          - os: macos-latest
-            artifact_name: paddler-bin-macos-amd64
+          # - os: macos-latest
+          #   artifact_name: paddler-bin-macos-amd64
 
     steps:
-      - name: checkout code
-        uses: actions/checkout@v4
-
-      - name: set up Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: stable
-
-      - name: build project
-        run: make
-
-      - name: Build the binary
+      - name: download goreleaser
         run: |
-          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            cargo install cargo-deb
-            cargo deb --no-build --output ${{ matrix.artifact_name }}.deb --maintainer "Intentt <paddler@intentt.io>"
-            mv target/release/paddler ${{ matrix.artifact_name }}
-          elif [ "${{ matrix.os }}" == "windows-latest" ]; then
-            mv target/release/paddler.exe ${{ matrix.artifact_name }}
-          else
-            mv target/release/paddler ${{ matrix.artifact_name }}
-          fi
-        shell: bash
+          sudo wget -O goreleaser.deb https://github.com/goreleaser/goreleaser/releases/download/v2.6.1/goreleaser_2.6.1_amd64.deb
+          sudo dpkg -i goreleaser.deb
+        
+      - name: release
+        run: goreleaser
+      # - name: checkout code
+      #   uses: actions/checkout@v4
 
-      - name: determine tag type
-        id: tag_type
-        run: |
-          if [[ ${{ github.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+-rc[0-9]+$ ]]; then
-            echo "tag_type=PRE_RELEASE_TAG" >> $GITHUB_OUTPUT
-          elif [[ ${{ github.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "tag_type=RELEASE_TAG" >> $GITHUB_OUTPUT
-          else
-            echo "tag_type=INVALID_TAG" >> $GITHUB_OUTPUT
-          fi
-        shell: bash
+      # - name: set up Rust
+      #   uses: dtolnay/rust-toolchain@stable
+      #   with:
+      #     toolchain: stable
 
-      - name: upload artifacts
-        if: steps.tag_type.outputs.tag_type != 'INVALID_TAG'
-        uses: svenstaro/upload-release-action@v2
-        with:
-          file: ${{ matrix.artifact_name }}
-          overwrite: true
-          prerelease: ${{ steps.tag_type.outputs.tag_type == 'PRE_RELEASE_TAG' }}
-          tag: ${{ github.ref }}
+      # - name: build project
+      #   run: make
 
-      - name: upload deb package (Linux)
-        if: matrix.os == 'ubuntu-latest' && steps.tag_type.outputs.tag_type != 'INVALID_TAG'
-        uses: svenstaro/upload-release-action@v2
-        with:
-          file: ${{ matrix.artifact_name }}.deb
-          overwrite: true
-          prerelease: ${{ steps.tag_type.outputs.tag_type == 'PRE_RELEASE_TAG' }}
-          tag: ${{ github.ref }}
+      # - name: Build the binary
+      #   run: |
+      #     if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+      #       cargo install cargo-deb
+      #       cargo deb --no-build --output ${{ matrix.artifact_name }}.deb --maintainer "Intentt <paddler@intentt.io>"
+      #       mv target/release/paddler ${{ matrix.artifact_name }}
+      #     elif [ "${{ matrix.os }}" == "windows-latest" ]; then
+      #       mv target/release/paddler.exe ${{ matrix.artifact_name }}
+      #     else
+      #       mv target/release/paddler ${{ matrix.artifact_name }}
+      #     fi
+      #   shell: bash
+
+      # - name: determine tag type
+      #   id: tag_type
+      #   run: |
+      #     if [[ ${{ github.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+-rc[0-9]+$ ]]; then
+      #       echo "tag_type=PRE_RELEASE_TAG" >> $GITHUB_OUTPUT
+      #     elif [[ ${{ github.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+      #       echo "tag_type=RELEASE_TAG" >> $GITHUB_OUTPUT
+      #     else
+      #       echo "tag_type=INVALID_TAG" >> $GITHUB_OUTPUT
+      #     fi
+      #   shell: bash
+
+      # - name: upload artifacts
+      #   if: steps.tag_type.outputs.tag_type != 'INVALID_TAG'
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     file: ${{ matrix.artifact_name }}
+      #     overwrite: true
+      #     prerelease: ${{ steps.tag_type.outputs.tag_type == 'PRE_RELEASE_TAG' }}
+      #     tag: ${{ github.ref }}
+
+      # - name: upload deb package (Linux)
+      #   if: matrix.os == 'ubuntu-latest' && steps.tag_type.outputs.tag_type != 'INVALID_TAG'
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     file: ${{ matrix.artifact_name }}.deb
+      #     overwrite: true
+      #     prerelease: ${{ steps.tag_type.outputs.tag_type == 'PRE_RELEASE_TAG' }}
+      #     tag: ${{ github.ref }}
