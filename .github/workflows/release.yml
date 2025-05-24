@@ -24,7 +24,7 @@ jobs:
 
     steps:      
       - name: download zig
-        run: snap install zig --classic --beta
+        run: sudo snap install zig --classic --beta
 
       - uses: actions/checkout@v3
       - name: Run GoReleaser
