@@ -28,8 +28,14 @@ jobs:
           sudo wget -O goreleaser.deb https://github.com/goreleaser/goreleaser/releases/download/v2.6.1/goreleaser_2.6.1_amd64.deb
           sudo dpkg -i goreleaser.deb
         
-      - name: release
-        run: GITUB_TOKEN=${{ secrets.GITHUB_TOKEN }} goreleaser release
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # - name: checkout code
       #   uses: actions/checkout@v4
 
