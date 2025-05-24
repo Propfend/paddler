@@ -22,12 +22,12 @@ jobs:
           # - os: macos-latest
           #   artifact_name: paddler-bin-macos-amd64
 
-    steps:
-      - name: download goreleaser
-        run: |
-          sudo wget -O goreleaser.deb https://github.com/goreleaser/goreleaser/releases/download/v2.6.1/goreleaser_2.6.1_amd64.deb
-          sudo dpkg -i goreleaser.deb
-        
+    steps:      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
@@ -36,6 +36,7 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       # - name: checkout code
       #   uses: actions/checkout@v4
 
