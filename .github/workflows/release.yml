@@ -23,8 +23,10 @@ jobs:
           #   artifact_name: paddler-bin-macos-amd64
 
     steps:      
+      - name: download zig
+        run: snap install zig --classic --beta
+
       - uses: actions/checkout@v3
-      - uses: mlugg/setup-zig@v2
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
