@@ -5,3 +5,6 @@
 /static
 /target
 dist/
+# Added by goreleaser init:
+.intentionally-empty-file.o
+target/
