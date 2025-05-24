@@ -26,6 +26,7 @@ builds:
       # - x86_64-pc-windows-gnu
       # - aarch64-unknown-linux-gnu
       # - aarch64-apple-darwin
+    tool: "cross"
 
 archives:
   - formats: [tar.gz]
