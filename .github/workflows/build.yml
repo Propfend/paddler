@@ -1,21 +1,21 @@
-name: build
+# name: build
 
-on:
-  workflow_call:
-  workflow_dispatch:
-  push:
-    branches:
-      - "**"
+# on:
+#   workflow_call:
+#   workflow_dispatch:
+#   push:
+#     branches:
+#       - "**"
 
-jobs:
-  build:
-    name: build
-    runs-on: ubuntu-latest
+# jobs:
+#   build:
+#     name: build
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: checkout code
-        uses: actions/checkout@v4
+#     steps:
+#       - name: checkout code
+#         uses: actions/checkout@v4
 
-      - name: Build
-        run: |
-          make build
+#       - name: Build
+#         run: |
+#           make build
