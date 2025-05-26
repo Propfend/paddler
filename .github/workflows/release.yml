@@ -27,16 +27,19 @@
 #         uses: actions/checkout@v3
 
 #       - name: build project
+#         run: make
+
+#       - name: Build the binary
 #         run: |
-#           make esbuild
-#           cargo build --release --features web_dashboard --target-dir ${{ matrix.artifact_name }}
-
-#       - name: install cargo-deb
-#         run: cargo install cargo-deb
-
-#       - name: Build deb file
-#         if: ${{ matrix.os }} == "ubuntu-latest"
-#         run: cargo deb --no-build --output ${{ matrix.artifact_name }}.deb --maintainer "Intentt <paddler@intentt.io>"
+#           if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            
+#             cargo deb --no-build --output ${{ matrix.artifact_name }}.deb --maintainer "Intentt <paddler@intentt.io>"
+#             mv target/release/paddler ${{ matrix.artifact_name }}
+#           elif [ "${{ matrix.os }}" == "windows-latest" ]; then
+#             mv target/release/paddler.exe ${{ matrix.artifact_name }}
+#           else
+#             mv target/release/paddler ${{ matrix.artifact_name }}
+#           fi
 #         shell: bash
 
 #       - name: determine tag type
@@ -70,46 +73,44 @@
 #           tag: ${{ github.ref }}
 
 
-name: release
+# name: release
 
-on:
-  push:
-    tags:
-      - v[0-9].[0-9]+.[0-9]+
-      - v[0-9].[0-9]+.[0-9]+-rc[0-9]+
+# on:
+#   push:
+#     tags:
+#       - v[0-9].[0-9]+.[0-9]+
+#       - v[0-9].[0-9]+.[0-9]+-rc[0-9]+
 
-jobs:
-  create-release:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: taiki-e/create-gh-release-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+# jobs:
+#   create-release:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: taiki-e/create-gh-release-action@v1
+#         with:
+#           token: ${{ secrets.GITHUB_TOKEN }}
 
-  upload-assets:
-    needs: create-release
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-            artifact_name: linux-amd64
+#   upload-assets:
+#     needs: create-release
+#     strategy:
+#       matrix:
+#         include:
+#           - os: ubuntu-latest
+#             artifact_name: paddler-bin-linux-amd64
 
-          - os: windows-latest
-            artifact_name: windows-amd64.exe
+#           - os: windows-latest
+#             artifact_name: paddler-bin-windows-amd64.exe
 
-          - os: macos-latest
-            artifact_name: macos-amd64
+#           - os: macos-latest
+#             artifact_name: paddler-bin-macos-amd64
 
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: taiki-e/upload-rust-binary-action@v1
-        with:
-          bin: "paddler-bin"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          archive: ${{ matrix.artifact_name }}
-          # target: ${{ matrix.artifact_name }}
+#     runs-on: ${{ matrix.os }}
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: taiki-e/upload-rust-binary-action@v1
+#         with:
+#           bin: "paddler"
+#           token: ${{ secrets.GITHUB_TOKEN }}
         # run: |
         #   if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
         #     cargo install cargo-deb
@@ -120,3 +121,37 @@ jobs:
         #   else
         #     mv target/release/paddler ${{ matrix.artifact_name }}
         #   fi
+
+        # .github/workflows/release.yml
+
+name: release
+
+on:
+  push:
+    tags:
+      - v[0-9].[0-9]+.[0-9]+
+      - v[0-9].[0-9]+.[0-9]+-rc[0-9]+
+
+jobs:
+  release:
+    name: release ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: paddler-bin-linux-amd64
+
+          - os: windows-latest
+            artifact_name: paddler-bin-windows-amd64.exe
+
+          - os: macos-latest
+            artifact_name: paddler-bin-macos-amd64
+
+    steps:
+      - uses: actions/checkout@master
+      - name: Compile and release
+        uses: rust-build/rust-build.action@v1.4.5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
