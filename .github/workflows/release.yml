@@ -110,10 +110,12 @@ jobs:
       - uses: taiki-e/upload-rust-binary-action@v1
         with:
           bin: "paddler"
+          zip: none
+          dry-run: true
+          artifact: true
           asset: ${{ matrix.artifact_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          zip: none
-          
+
       # - uses: actions/download-artifact@v4
       # - some post scripts
       # - uses: softprops/action-gh-release@v2
