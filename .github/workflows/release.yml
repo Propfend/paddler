@@ -120,11 +120,11 @@ jobs:
           - os: ubuntu-latest
             artifact_name: paddler-bin-linux-amd64
 
-          # - os: windows-latest
-          #   artifact_name: paddler-bin-windows-amd64.exe
+          - os: windows-latest
+            artifact_name: paddler-bin-windows-amd64.exe
 
-          # - os: macos-latest
-          #   artifact_name: paddler-bin-macos-amd64
+          - os: macos-latest
+            artifact_name: paddler-bin-macos-amd64
 
     runs-on: ${{ matrix.os }}
     steps:
