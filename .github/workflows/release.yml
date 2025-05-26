@@ -112,6 +112,11 @@ jobs:
           bin: "paddler"
           asset: ${{ matrix.artifact_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          zip: none
+          
+      # - uses: actions/download-artifact@v4
+      # - some post scripts
+      # - uses: softprops/action-gh-release@v2
 
       # - name: Deb Build
       #   uses: ebbflow-io/cargo-deb-armv7-debian@1.47.0-1
