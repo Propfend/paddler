@@ -29,7 +29,7 @@ jobs:
       - name: build project
         run: |
           make esbuild
-          cargo build --release --features --target-dir ${{ artifact_name }}
+          cargo build --release --features --target-dir ${{ matrix.artifact_name }}
 
       - name: install cargo-deb
         run: cargo install cargo-deb
