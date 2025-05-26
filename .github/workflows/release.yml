@@ -97,13 +97,13 @@ jobs:
         include:
           - os: ubuntu-latest
             artifact_name: paddler-bin-linux-amd64
-
+            # archive_name: 
           - os: windows-latest
             artifact_name: paddler-bin-windows-amd64.exe
-
+            # archive_name: 
           - os: macos-latest
             artifact_name: paddler-bin-macos-amd64
-
+            # archive_name: 
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -111,6 +111,7 @@ jobs:
         with:
           bin: "paddler"
           zip: none
+          target: ${{ matrix.artifact_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/download-artifact@v4
       - run: ls
