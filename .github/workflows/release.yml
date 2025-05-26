@@ -72,7 +72,6 @@
 #           prerelease: ${{ steps.tag_type.outputs.tag_type == 'PRE_RELEASE_TAG' }}
 #           tag: ${{ github.ref }}
 
-
 name: release
 
 on:
@@ -109,14 +108,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: taiki-e/upload-rust-binary-action@v1
         with:
-          bin: "paddler"
+          bin: ""
           zip: none
-          archive: ${{ matrix.artifact_name }}
+          archive: ""
           token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/download-artifact@v4
-      - run: |
-          sudo tar -xzf ${{ matrix.artifact_name }}.tar.gz
-          sudo rm ${{ matrix.artifact_name }}.tar.gz
+      # - run: |
+      #     sudo tar -xzf ${{ matrix.artifact_name }}.tar.gz
+      #     sudo rm ${{ matrix.artifact_name }}.tar.gz
       - uses: softprops/action-gh-release@v2
 
       # - name: Deb Build
