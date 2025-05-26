@@ -111,7 +111,6 @@ jobs:
         with:
           bin: "paddler"
           zip: none
-          dry-run: true
           token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/download-artifact@v4
       - run: ls
