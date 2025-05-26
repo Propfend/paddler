@@ -78,8 +78,8 @@ name: release
 on:
   push:
     tags:
-      - v[0-9].[0-9]+.[0-9]+
-      - v[0-9].[0-9]+.[0-9]+-rc[0-9]+
+      - v[0-9]+.[0-9]+.[0-9]+
+      - v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+
 
 jobs:
   create-release:
@@ -112,18 +112,10 @@ jobs:
           bin: "paddler"
           zip: none
           dry-run: true
-          asset: ${{ matrix.artifact_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          target: ${{ matrix.target }}
-      - uses: svenstaro/upload-release-action@v2
-        with:
-          file: ${{ matrix.artifact_name }}
-          overwrite: true
-          tag: ${{ github.ref }}
-
-      # - uses: actions/download-artifact@v4
-      # - some post scripts
-      # - uses: softprops/action-gh-release@v2
+      - uses: actions/download-artifact@v4
+      - run: ls
+      - uses: softprops/action-gh-release@v2
 
       # - name: Deb Build
       #   uses: ebbflow-io/cargo-deb-armv7-debian@1.47.0-1
