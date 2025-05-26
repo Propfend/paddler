@@ -96,19 +96,20 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact_name: paddler-bin-linux-amd64
+            artifact_name: bin-linux-amd64
             # archive_name: 
           - os: windows-latest
             artifact_name: paddler-bin-windows-amd64.exe
             # archive_name: 
           - os: macos-latest
-            artifact_name: paddler-bin-macos-amd64
+            artifact_name: bin-macos-amd64
             # archive_name: 
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: taiki-e/upload-rust-binary-action@v1
         with:
+          bin: "paddler"
           zip: none
           archive: ${{ matrix.artifact_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
