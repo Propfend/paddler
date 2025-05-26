@@ -96,14 +96,14 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact_name: bin-linux-amd64
-            # archive_name: 
+            artifact_name: paddler-bin-linux-amd64
+            
           - os: windows-latest
             artifact_name: paddler-bin-windows-amd64.exe
-            # archive_name: 
+            
           - os: macos-latest
-            artifact_name: bin-macos-amd64
-            # archive_name: 
+            artifact_name: paddler-bin-macos-amd64
+            
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -114,13 +114,13 @@ jobs:
           archive: ${{ matrix.artifact_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/download-artifact@v4
-      - run: ls
+      - run: |
+          sudo tar -xzf ${{ matrix.artifact_name }}.tar.gz
+          sudo rm ${{ matrix.artifact_name }}.tar.gz
       - uses: softprops/action-gh-release@v2
 
       # - name: Deb Build
       #   uses: ebbflow-io/cargo-deb-armv7-debian@1.47.0-1
-
-
         # run: |
         #   if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
         #     cargo install cargo-deb
