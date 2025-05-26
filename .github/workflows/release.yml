@@ -112,7 +112,6 @@ jobs:
           bin: "paddler"
           zip: none
           dry-run: true
-          artifact: true
           asset: ${{ matrix.artifact_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
