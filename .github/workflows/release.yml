@@ -108,7 +108,8 @@ jobs:
         with:
           bin: "paddler-bin"
           token: ${{ secrets.GITHUB_TOKEN }}
-          target: ${{ matrix.artifact_name }}
+          archive: ${{ matrix.artifact_name }}
+          # target: ${{ matrix.artifact_name }}
         # run: |
         #   if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
         #     cargo install cargo-deb
