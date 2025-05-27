@@ -97,8 +97,8 @@ jobs:
           - os: ubuntu-latest
             artifact_name: paddler-bin-linux-amd64
             
-          - os: windows-latest
-            artifact_name: paddler-bin-windows-amd64.exe
+          # - os: windows-latest
+          #   artifact_name: paddler-bin-windows-amd64.exe
             
           - os: macos-latest
             artifact_name: paddler-bin-macos-amd64
@@ -106,7 +106,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: taiki-e/upload-rust-binary-action@v1
+      
+      - id: upload
+        uses: taiki-e/upload-rust-binary-action@v1
         with:
           bin: "paddler"
           zip: none
@@ -114,9 +116,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/download-artifact@v4
-      # - run: |
-      #     sudo tar -xzf ${{ matrix.artifact_name }}.tar.gz
-      #     sudo rm ${{ matrix.artifact_name }}.tar.gz
+      - run: |
+          echo ${{ steps.upload.outputs.archive }}
+          sudo tar -xzf ${{ steps.upload.outputs.archive }}
       - uses: softprops/action-gh-release@v2
 
       # - name: Deb Build
