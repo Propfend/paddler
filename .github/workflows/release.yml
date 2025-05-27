@@ -110,7 +110,7 @@ jobs:
       - id: upload
         uses: taiki-e/upload-rust-binary-action@v1
         with:
-          bin: "paddler"
+          bin: ${{ steps.upload.outputs.archive }}
           profile: dev
           zip: none
           archive: ${{ matrix.artifact_name }}
@@ -121,7 +121,6 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           files: ${{ steps.upload.outputs.archive }}
-
 
           # echo ${{ steps.upload.outputs.archive }}
           # sudo tar -xzf ${{ steps.upload.outputs.archive }}
