@@ -115,12 +115,12 @@ jobs:
           zip: none
           archive: ${{ matrix.artifact_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: actions/download-artifact@v4
       - run: |
-          ls
           sudo tar -xzf ${{ steps.upload.outputs.tar }}
+          ls
       - uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ steps.upload.outputs.archive }}
 
 
           # echo ${{ steps.upload.outputs.archive }}
