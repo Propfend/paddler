@@ -119,7 +119,7 @@ jobs:
       - uses: actions/download-artifact@v4
       - run: |
           ls
-          ./${{ steps.upload.outputs.archive }}
+          sudo tar -xzf ${{ steps.upload.outputs.tar }}
       - uses: softprops/action-gh-release@v2
 
 
