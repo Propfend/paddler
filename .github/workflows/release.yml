@@ -117,9 +117,19 @@ jobs:
 
       - uses: actions/download-artifact@v4
       - run: |
-          echo ${{ steps.upload.outputs.archive }}
-          sudo tar -xzf ${{ steps.upload.outputs.archive }}
+          ${{ steps.upload.outputs.archive }}
       - uses: softprops/action-gh-release@v2
+
+          # # echo ${{ steps.upload.outputs.archive }}
+          # sudo tar -xzf 
+      # - name: upload artifacts
+      #   if: steps.tag_type.outputs.tag_type != 'INVALID_TAG'
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     file: ${{ matrix.artifact_name }}
+      #     overwrite: true
+      #     prerelease: ${{ steps.tag_type.outputs.tag_type == 'PRE_RELEASE_TAG' }}
+      #     tag: ${{ github.ref }}
 
       # - name: Deb Build
       #   uses: ebbflow-io/cargo-deb-armv7-debian@1.47.0-1
