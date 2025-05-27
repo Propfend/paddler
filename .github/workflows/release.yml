@@ -120,7 +120,7 @@ jobs:
           ls
       - uses: softprops/action-gh-release@v2
         with:
-          name: ${{ steps.upload.outputs.archive }}
+          files: ${{ steps.upload.outputs.archive }}
 
 
           # echo ${{ steps.upload.outputs.archive }}
