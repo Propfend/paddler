@@ -111,7 +111,7 @@ jobs:
         uses: taiki-e/upload-rust-binary-action@v1
         with:
           bin: "paddler"
-          profile: debug
+          profile: dev
           zip: none
           archive: ${{ matrix.artifact_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
