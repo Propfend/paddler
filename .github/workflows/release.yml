@@ -110,7 +110,7 @@ jobs:
       - id: upload
         uses: taiki-e/upload-rust-binary-action@v1
         with:
-          bin: ${{ steps.upload.outputs.archive }}
+          bin: ${{ matrix.artifact_name }}
           profile: dev
           zip: none
           archive: ${{ matrix.artifact_name }}
