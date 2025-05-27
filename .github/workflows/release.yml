@@ -1,77 +1,3 @@
-# name: release
-
-# on:
-#   push:
-#     tags:
-#       - v[0-9].[0-9]+.[0-9]+
-#       - v[0-9].[0-9]+.[0-9]+-rc[0-9]+
-
-# jobs:
-#   build:
-#     name: build
-#     runs-on: ${{ matrix.os }}
-#     strategy:
-#       matrix:
-#         include:
-#           - os: ubuntu-latest
-#             artifact_name: paddler-bin-linux-amd64
-
-#           - os: windows-latest
-#             artifact_name: paddler-bin-windows-amd64.exe
-
-#           - os: macos-latest
-#             artifact_name: paddler-bin-macos-amd64
-
-#     steps:              
-#       - name: Checkout
-#         uses: actions/checkout@v3
-
-#       - name: build project
-#         run: make
-
-#       - name: Build the binary
-#         run: |
-#           if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            
-#             cargo deb --no-build --output ${{ matrix.artifact_name }}.deb --maintainer "Intentt <paddler@intentt.io>"
-#             mv target/release/paddler ${{ matrix.artifact_name }}
-#           elif [ "${{ matrix.os }}" == "windows-latest" ]; then
-#             mv target/release/paddler.exe ${{ matrix.artifact_name }}
-#           else
-#             mv target/release/paddler ${{ matrix.artifact_name }}
-#           fi
-#         shell: bash
-
-#       - name: determine tag type
-#         id: tag_type
-#         run: |
-#           if [[ ${{ github.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+-rc[0-9]+$ ]]; then
-#             echo "tag_type=PRE_RELEASE_TAG" >> $GITHUB_OUTPUT
-#           elif [[ ${{ github.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-#             echo "tag_type=RELEASE_TAG" >> $GITHUB_OUTPUT
-#           else
-#             echo "tag_type=INVALID_TAG" >> $GITHUB_OUTPUT
-#           fi
-#         shell: bash
-
-#       - name: upload artifacts
-#         if: steps.tag_type.outputs.tag_type != 'INVALID_TAG'
-#         uses: svenstaro/upload-release-action@v2
-#         with:
-#           file: ${{ matrix.artifact_name }}
-#           overwrite: true
-#           prerelease: ${{ steps.tag_type.outputs.tag_type == 'PRE_RELEASE_TAG' }}
-#           tag: ${{ github.ref }}
-
-#       - name: upload deb package (Linux)
-#         if: matrix.os == 'ubuntu-latest' && steps.tag_type.outputs.tag_type != 'INVALID_TAG'
-#         uses: svenstaro/upload-release-action@v2
-#         with:
-#           file: ${{ matrix.artifact_name }}.deb
-#           overwrite: true
-#           prerelease: ${{ steps.tag_type.outputs.tag_type == 'PRE_RELEASE_TAG' }}
-#           tag: ${{ github.ref }}
-
 name: release
 
 on:
@@ -81,46 +7,119 @@ on:
       - v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+
 
 jobs:
-  create-release:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: taiki-e/create-gh-release-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-  upload-assets:
-    needs: create-release
+  release:
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact_name: paddler-bin-linux-amd64
+            artifact: paddler-bin-linux-amd64
             
-          # - os: windows-latest
-          #   artifact_name: paddler-bin-windows-amd64.exe
+          - os: windows-latest
+            artifact: paddler-bin-windows-amd64.exe
             
           - os: macos-latest
-            artifact_name: paddler-bin-macos-amd64
-            
-    runs-on: ${{ matrix.os }}
+            artifact: paddler-bin-macos-amd64
+
     steps:
       - uses: actions/checkout@v4
+      - name: Build
+        run: make
+
+      - name: Prepare binary
+        run: |
+          if [ "${{ matrix.is-linux }}" = "true" ]; then
+            cargo deb --no-build --output ${{ matrix.artifact }}.deb --maintainer "Intentt <paddler@intentt.io>"
+            mv target/release/paddler ${{ matrix.artifact }}
+          elif [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            mv target/release/paddler.exe ${{ matrix.artifact }}
+          else
+            mv target/release/paddler ${{ matrix.artifact }}
+          fi
+        shell: bash
+
+      - name: Determine release type
+        id: tag
+        run: |
+          if [[ ${{ github.ref }} =~ -rc[0-9]+$ ]]; then
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          prerelease: ${{ steps.tag.outputs.prerelease }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload binary
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.artifact }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload .deb package (Linux only)
+        if: matrix.is-linux == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.artifact }}.deb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+# name: release
+
+# on:
+#   push:
+#     tags:
+#       - v[0-9]+.[0-9]+.[0-9]+
+#       - v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+
+
+# jobs:
+#   create-release:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: taiki-e/create-gh-release-action@v1
+#         with:
+#           token: ${{ secrets.GITHUB_TOKEN }}
+
+#   upload-assets:
+#     needs: create-release
+#     strategy:
+#       matrix:
+#         include:
+#           - os: ubuntu-latest
+#             artifact_name: paddler-bin-linux-amd64
+            
+#           # - os: windows-latest
+#           #   artifact_name: paddler-bin-windows-amd64.exe
+            
+#           - os: macos-latest
+#             artifact_name: paddler-bin-macos-amd64
+            
+#     runs-on: ${{ matrix.os }}
+#     steps:
+#       - uses: actions/checkout@v4
       
-      - id: upload
-        uses: taiki-e/upload-rust-binary-action@v1
-        with:
-          bin: ${{ matrix.artifact_name }}
-          profile: dev
-          zip: none
-          archive: ${{ matrix.artifact_name }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - run: |
-          sudo tar -xzf ${{ steps.upload.outputs.tar }}
-          ls
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: ${{ steps.upload.outputs.archive }}
+#       - id: upload
+#         uses: taiki-e/upload-rust-binary-action@v1
+#         with:
+#           bin: ${{ matrix.artifact_name }}
+#           profile: dev
+#           zip: none
+#           archive: ${{ matrix.artifact_name }}
+#           token: ${{ secrets.GITHUB_TOKEN }}
+#       - run: |
+#           sudo tar -xzf ${{ steps.upload.outputs.tar }}
+#           ls
+#       - uses: softprops/action-gh-release@v2
+#         with:
+#           files: ${{ steps.upload.outputs.archive }}
 
           # echo ${{ steps.upload.outputs.archive }}
           # sudo tar -xzf ${{ steps.upload.outputs.archive }}

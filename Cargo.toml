@@ -6,6 +6,10 @@ repository = "https://github.com/distantmagic/paddler"
 version = "1.0.0"
 edition = "2021"
 
+[package.metadata.deb]
+maintainer = "Intentt <paddler@intentt.io>"
+copyright = "2025 Intentt <paddler@intentt.io>"
+
 [dependencies]
 actix = "0.13.5"
 actix-web = "4.9.0"
