@@ -111,17 +111,20 @@ jobs:
         uses: taiki-e/upload-rust-binary-action@v1
         with:
           bin: "paddler"
+          profile: debug
           zip: none
           archive: ${{ matrix.artifact_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/download-artifact@v4
       - run: |
-          ${{ steps.upload.outputs.archive }}
+          ls
+          ./${{ steps.upload.outputs.archive }}
       - uses: softprops/action-gh-release@v2
 
-          # # echo ${{ steps.upload.outputs.archive }}
-          # sudo tar -xzf 
+
+          # echo ${{ steps.upload.outputs.archive }}
+          # sudo tar -xzf ${{ steps.upload.outputs.archive }}
       # - name: upload artifacts
       #   if: steps.tag_type.outputs.tag_type != 'INVALID_TAG'
       #   uses: svenstaro/upload-release-action@v2
