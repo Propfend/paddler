@@ -31,7 +31,7 @@ if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
   printf 'bin=%s\n' "${INPUT_BIN}" >>"${GITHUB_OUTPUT}"
 else
   echo "GITHUB_OUTPUT is not set; skip setting the 'archive' output"
-  echo "📦 Binary archive created: $INPUT_BIN"
+  echo "📦 Binary created: $INPUT_BIN"
 fi
 
 echo "✅ Done."

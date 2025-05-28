@@ -9,12 +9,8 @@ inputs:
     description: '.deb file name'
     required: false
     default: ""
-  project:
-    description: 'Cargo project name'
-    required: true
-    default: ""
-  profile:
-    description: 'Binary profile (release or debug)'
+  path:
+    description: 'Path to binary'
     required: true
     default: ""
 outputs:
