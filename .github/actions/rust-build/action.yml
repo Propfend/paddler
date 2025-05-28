@@ -1,5 +1,6 @@
 name: 'Builds rust project'
 description: 'Builds rust project'
+
 inputs:
   bin:
     description: 'Binary name'
@@ -12,10 +13,12 @@ inputs:
     description: 'Build features'
     required: false
     default: ""
+
 outputs:
-    bin:
-      description: "Built binary"
-      value: ${{ steps.files.outputs.bin }}
+  bin:
+    description: "Built binary"
+    value: ${{ steps.files.outputs.bin }}
+
 runs:
   using: "composite"
   steps:
@@ -23,3 +26,7 @@ runs:
       id: files
       run: ./.github/actions/rust-build/script.sh
       shell: bash
+      env:
+        INPUT_BIN: ${{ inputs.bin }}
+        INPUT_PROFILE: ${{ inputs.profile }}
+        INPUT_FEATURES: ${{ inputs.features }}
