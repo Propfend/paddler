@@ -1,0 +1,25 @@
+name: 'Builds rust project'
+description: 'Builds rust project'
+inputs:
+  bin:
+    description: 'Binary name'
+    required: true
+  profile:
+    description: 'Profile used on build'
+    required: false
+    default: "release"
+  features:
+    description: 'Build features'
+    required: false
+    default: ""
+outputs:
+    bin:
+      description: "Built binary"
+      value: ${{ steps.files.outputs.bin }}
+runs:
+  using: "composite"
+  steps:
+    - name: Build files
+      id: files
+      run: ./script.sh"
+      shell: bash

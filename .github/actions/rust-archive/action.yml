@@ -1,0 +1,33 @@
+name: 'Archives rust project'
+description: 'Archives rust project'
+inputs:
+  archive:
+    description: 'Archive name (compressed on tar.gz)'
+    required: false
+    default: ""
+  deb:
+    description: '.deb file name'
+    required: false
+    default: ""
+  project:
+    description: 'Cargo project name'
+    required: true
+    default: ""
+  profile:
+    description: 'Binary profile (release or debug)'
+    required: true
+    default: ""
+outputs:
+    archive:
+      description: "Archived file in .tar.gz"
+      value: ${{ steps.files.outputs.archive }}
+    deb:
+      description: "Archived file in .tar.gz"
+      value: ${{ steps.files.outputs.deb }}
+runs:
+  using: "composite"
+  steps:
+    - name: Archive files
+      id: files
+      run: ./script.sh"
+      shell: bash
