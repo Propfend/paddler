@@ -178,7 +178,9 @@ jobs:
           bin: ${{ matrix.artifact }}
           profile: release
           features: web_dashboard
-          before: cargo install cargo-deb && make esbuild
+          before: |
+            cargo install cargo-deb
+            make esbuild
 
       - name: Archive binary
         uses: ./.github/actions/rust-archive/
