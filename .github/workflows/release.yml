@@ -171,11 +171,9 @@ jobs:
             artifact: paddler-bin-macos-amd64
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Build rust
-        uses: .github/actions/rust-build/
+        uses: ./.github/actions/rust-build/
         with:
           bin: ${{ matrix.artifact }}
           profile: release
