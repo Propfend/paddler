@@ -172,12 +172,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Checkout
-        run: ls
-
-      # - name: Build rust
-      #   uses: .github/actions/rust-build/
-      #   with:
-      #     bin: ${{ matrix.artifact }}
-      #     profile: release
-      #     features: web_dashboard
+      - name: Build rust
+        uses: .github/actions/rust-build/
+        with:
+          bin: ${{ matrix.artifact }}
+          profile: release
+          features: web_dashboard
