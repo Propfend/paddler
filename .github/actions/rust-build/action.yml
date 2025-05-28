@@ -22,9 +22,8 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Build files
-      id: files
-      run: make esbuild && ./.github/actions/rust-build/script.sh
+    - id: files
+      run: bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/.github/actions/rust-archive/script.sh"
       shell: bash
       env:
         INPUT_BIN: ${{ inputs.bin }}
