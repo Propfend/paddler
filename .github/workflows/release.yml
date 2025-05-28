@@ -179,7 +179,7 @@ jobs:
           profile: release
           features: web_dashboard
           before: |
-            make esbuild
+            make esbuild &&
             cargo install cargo-deb
 
       - name: Archive binary
