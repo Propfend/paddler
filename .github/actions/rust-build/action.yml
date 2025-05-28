@@ -21,5 +21,5 @@ runs:
   steps:
     - name: Build files
       id: files
-      run: ./.github/actions/rust-archive/script.sh
+      run: ./.github/actions/rust-build/script.sh
       shell: bash
