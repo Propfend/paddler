@@ -24,7 +24,7 @@ runs:
   steps:
     - name: Build files
       id: files
-      run: ./.github/actions/rust-build/script.sh
+      run: make esbuild && ./.github/actions/rust-build/script.sh
       shell: bash
       env:
         INPUT_BIN: ${{ inputs.bin }}
