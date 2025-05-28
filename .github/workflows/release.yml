@@ -173,7 +173,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build rust
-        uses: .github/actions/rust-build/
+        uses: ../actions/rust-build/
         with:
           bin: ${{ matrix.artifact }}
           profile: release
