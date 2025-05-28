@@ -1,10 +1,6 @@
 #!/bin/bash
 set -e
 
-read INPUT_ARCHIVE
-read INPUT_DEB
-read INPUT_PATH
-
 echo "📁 archive: $INPUT_ARCHIVE"
 echo "📦 deb: $INPUT_DEB"
 echo "📦 project: $INPUT_PATH"
@@ -22,7 +18,7 @@ if [[ -n "$INPUT_DEB" ]]; then
 fi
 
 if [[ -n "$INPUT_ARCHIVE" ]]; then
-  tar -czf "$INPUT_ARCHIVE.tar.gz" "$INPUT_PATH"
+  tar -czf "$INPUT_ARCHIVE.tar.gz" "$INPUT_ARCHIVE"
   
   if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
     printf 'archive=%s\n' "${INPUT_ARCHIVE}" >>"${GITHUB_OUTPUT}"

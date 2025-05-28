@@ -189,5 +189,11 @@ jobs:
         with:
           deb: ${{ matrix.artifact }}
           archive: ${{ matrix.artifact }}
-          profile: release
-          project: paddler
+          path: ${{ matrix.artifact }}
+      
+      - name: Map
+        run: ls
+        # with:
+        #   deb: ${{ matrix.artifact }}
+        #   archive: ${{ matrix.artifact }}
+        #   path: ${{ matrix.artifact }}
