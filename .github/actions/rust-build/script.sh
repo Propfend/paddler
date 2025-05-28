@@ -1,10 +1,6 @@
 #!/bin/bash
 set -e
 
-read INPUT_BIN
-read INPUT_PROFILE
-read INPUT_FEATURES
-
 echo "🔧 bin: $INPUT_BIN"
 echo "🔧 profile: $INPUT_PROFILE"
 echo "🔧 features: $INPUT_FEATURES"

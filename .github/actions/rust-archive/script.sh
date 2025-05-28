@@ -1,11 +1,6 @@
 #!/bin/bash
 set -e
 
-read INPUT_ARCHIVE
-read INPUT_DEB
-read INPUT_PROJECT
-read INPUT_PROFILE
-
 echo "📁 archive: $INPUT_ARCHIVE"
 echo "📦 deb: $INPUT_DEB"
 echo "📦 project: $INPUT_PROJECT"
