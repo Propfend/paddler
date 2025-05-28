@@ -13,6 +13,10 @@ inputs:
     description: 'Path to binary'
     required: true
     default: ""
+  before:
+    description: 'Before hook'
+    required: false
+    default: ""
 outputs:
     archive:
       description: "Archived file in .tar.gz"
@@ -31,3 +35,4 @@ runs:
         INPUT_DEB: ${{ inputs.deb }}
         INPUT_PROJECT: ${{ inputs.project }}
         INPUT_PROFILE: ${{ inputs.profile }}
+        INPUT_BEFORE: ${{ inputs.before }}

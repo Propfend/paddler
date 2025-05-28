@@ -13,6 +13,10 @@ inputs:
     description: 'Build features'
     required: false
     default: ""
+  before:
+    description: 'Before hook'
+    required: false
+    default: ""
 
 outputs:
   bin:
@@ -29,3 +33,4 @@ runs:
         INPUT_BIN: ${{ inputs.bin }}
         INPUT_PROFILE: ${{ inputs.profile }}
         INPUT_FEATURES: ${{ inputs.features }}
+        INPUT_BEFORE: ${{ inputs.before }}

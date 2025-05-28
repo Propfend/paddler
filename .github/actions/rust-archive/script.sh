@@ -4,6 +4,11 @@ set -e
 echo "📁 archive: $INPUT_ARCHIVE"
 echo "📦 deb: $INPUT_DEB"
 echo "📦 project: $INPUT_PATH"
+echo "📦 before hook: $INPUT_BEFORE"
+
+if [[ -n "$INPUT_BEFORE" ]]; then
+  $INPUT_BEFORE
+fi
 
 if [[ -n "$INPUT_DEB" ]]; then
   echo "🛠️ Building DEB package..."

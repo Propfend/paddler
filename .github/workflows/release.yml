@@ -172,18 +172,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Build static
-        run: make esbuild
-
-      - uses: actions/checkout@v4
       - name: Build rust
         uses: ./.github/actions/rust-build/
         with:
           bin: ${{ matrix.artifact }}
           profile: release
           features: web_dashboard
+          before: make esbuild
 
-      - uses: actions/checkout@v4
       - name: Archive binary
         uses: ./.github/actions/rust-archive/
         with:

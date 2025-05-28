@@ -4,6 +4,11 @@ set -e
 echo "🔧 bin: $INPUT_BIN"
 echo "🔧 profile: $INPUT_PROFILE"
 echo "🔧 features: $INPUT_FEATURES"
+echo "📦 before hook: $INPUT_BEFORE"
+
+if [[ -n "$INPUT_BEFORE" ]]; then
+  $INPUT_BEFORE
+fi
 
 if [[ $INPUT_PROFILE != "release" && $INPUT_PROFILE != "dev" ]]; then
   echo "❌ Invalid profile: $INPUT_PROFILE. Must be 'dev' or 'release'."
