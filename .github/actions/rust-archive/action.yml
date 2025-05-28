@@ -29,5 +29,5 @@ runs:
   steps:
     - name: Archive files
       id: files
-      run: ./script.sh"
+      run: ./script.sh
       shell: bash
