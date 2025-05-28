@@ -24,7 +24,7 @@ runs:
   using: "composite"
   steps:
     - id: files
-      run: bash --noprofile --norc "${GITHUB_ACTION_PATH:?}.github/actions/rust-archive/script.sh"
+      run: bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/script.sh"
       shell: bash
       env:
         INPUT_ARCHIVE: ${{ inputs.archive }}
