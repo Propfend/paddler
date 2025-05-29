@@ -176,7 +176,7 @@ jobs:
         uses: ./.github/actions/rust-build/
         with:
           bin: ${{ matrix.artifact }}
-          profile: release
+          profile: dev
           features: web_dashboard
           before: |
             cargo install cargo-deb
