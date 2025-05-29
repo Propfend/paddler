@@ -198,6 +198,7 @@ jobs:
           command: c
           files: |
             ./${{ matrix.artifact }}
+          outPath: ${{ matrix.artifact }}.tar.gz
 
       - name: Determine release type
         id: tag
