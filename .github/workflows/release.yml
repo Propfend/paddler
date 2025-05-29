@@ -186,6 +186,7 @@ jobs:
         uses: ./.github/actions/rust-archive/
         with:
           deb: ${{ matrix.artifact }}
+          os: linux
           archive: ${{ matrix.artifact }}
           path: ${{ matrix.artifact }}
       

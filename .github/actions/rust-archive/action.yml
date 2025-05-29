@@ -17,6 +17,10 @@ inputs:
     description: 'Before hook'
     required: false
     default: ""
+  OS:
+    description: 'OS to build on'
+    required: true
+    default: ""
     
 outputs:
     archive:
@@ -36,3 +40,4 @@ runs:
         INPUT_DEB: ${{ inputs.deb }}
         INPUT_PROFILE: ${{ inputs.profile }}
         INPUT_BEFORE: ${{ inputs.before }}
+        INPUT_OS: ${{ inputs.os }}

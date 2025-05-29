@@ -5,21 +5,24 @@ echo "📁 archive: $INPUT_ARCHIVE"
 echo "📦 deb: $INPUT_DEB"
 echo "📦 path: $INPUT_PATH"
 echo "📦 before hook: $INPUT_BEFORE"
+echo "📦 OS: $INPUT_OS"
 
 if [[ -n "$INPUT_BEFORE" ]]; then
   eval $INPUT_BEFORE
 fi
 
-if [[ -n "$INPUT_DEB" ]]; then
-  echo "🛠️ Building DEB package..."
-  cargo deb --no-build --output $INPUT_DEB.deb
+if [[ "$INPUT_OS" == "linux" ]]; then
+  if [[ -n "$INPUT_DEB" ]]; then
+    echo "🛠️ Building DEB package..."
+    cargo deb --no-build --output $INPUT_DEB.deb
 
-  if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
-    printf 'deb=%s\n' "${INPUT_DEB}" >>"${GITHUB_OUTPUT}"
-  else
-    echo "GITHUB_OUTPUT is not set; skip setting the 'archive' output"
-    echo "📦 DEB archive created: $INPUT_DEB.deb"
-  fi  
+    if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+      printf 'deb=%s\n' "${INPUT_DEB}" >>"${GITHUB_OUTPUT}"
+    else
+      echo "GITHUB_OUTPUT is not set; skip setting the 'archive' output"
+      echo "📦 DEB archive created: $INPUT_DEB.deb"
+    fi  
+  fi
 fi
 
 if [[ -n "$INPUT_ARCHIVE" ]]; then
