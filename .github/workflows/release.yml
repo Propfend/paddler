@@ -182,6 +182,9 @@ jobs:
             cargo install cargo-deb
             make esbuild
 
+      - name: Map
+        run: ls
+        
       - name: Archive binary
         uses: ./.github/actions/rust-archive/
         with:

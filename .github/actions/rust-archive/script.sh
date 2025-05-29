@@ -8,7 +8,7 @@ echo "📦 before hook: $INPUT_BEFORE"
 echo "📦 OS: $INPUT_OS"
 
 if [[ -n "$INPUT_BEFORE" ]]; then
-  eval $INPUT_BEFORE
+  eval "$INPUT_BEFORE"
 fi
 
 if [[ "$INPUT_OS" == "linux" ]]; then
