@@ -191,11 +191,22 @@ jobs:
           path: ${{ matrix.artifact }}
           before: cargo install cargo-deb
 
+      - name: Determine release type
+        id: tag
+        run: |
+          if [[ ${{ github.ref }} =~ -rc[0-9]+$ ]]; then
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: upload artifacts
-        # if: steps.tag_type.outputs.tag_type != 'INVALID_TAG'
+        if: steps.tag_type.outputs.tag_type != 'INVALID_TAG'
         uses: svenstaro/upload-release-action@v2
         with:
-          file: ${{ matrix.artifact_name }}*
+          file: ${{ matrix.artifact_name }}
+          file_glob: true
           overwrite: true
           prerelease: ${{ steps.tag_type.outputs.tag_type == 'PRE_RELEASE_TAG' }}
           tag: ${{ github.ref }}
+          
