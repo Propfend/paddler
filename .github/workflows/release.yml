@@ -182,7 +182,7 @@ jobs:
           before: make esbuild
 
       - name: Archive binary
-        uses: ./.github/actions/rust-archive/
+        uses: ./.github/actions/rust-cargo-deb/
         with:
           deb: ${{ matrix.artifact }}
           os: ${{ matrix.os }}
