@@ -187,9 +187,17 @@ jobs:
         with:
           deb: ${{ matrix.artifact }}
           os: ${{ matrix.os }}
-          archive: ${{ matrix.artifact }}
+          # archive: ${{ matrix.artifact }}
           path: ${{ matrix.artifact }}
           before: cargo install cargo-deb
+
+      - name: Compress action step
+        uses: a7ul/tar-action@v1.1.0
+        id: compress
+        with:
+          command: c
+          files: |
+            ./${{ matrix.artifact }}
 
       - name: Determine release type
         id: tag
@@ -199,6 +207,9 @@ jobs:
           else
             echo "prerelease=false" >> $GITHUB_OUTPUT
           fi
+
+      - name: Map
+        run: ls
 
       - name: upload artifacts
         if: steps.tag_type.outputs.tag_type != 'INVALID_TAG'
