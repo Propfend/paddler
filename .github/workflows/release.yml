@@ -172,7 +172,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      # Try to restore the built binary from cache
+      - name: Restore built binary
+        id: cache-binary
+        uses: actions/cache@v3
+        with:
+          path: ${{ matrix.artifact }}
+          key: ${{ runner.os }}-binary-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-binary-
+
+      # Only build if binary wasn't restored from cache
       - name: Build rust
+        if: steps.cache-binary.outputs.cache-hit != 'true'
         uses: ./.github/actions/rust-build/
         with:
           bin: ${{ matrix.artifact }}
@@ -182,8 +195,24 @@ jobs:
             cargo install cargo-deb
             make esbuild
 
-      - name: Map
-        run: ls
+      # Verify binary exists (either from cache or fresh build)
+      - name: Verify binary exists
+        run: |
+          if [ ! -f "${{ matrix.artifact }}" ]; then
+            echo "❌ Binary not found!"
+            exit 1
+          else
+            echo "✅ Binary exists at ${{ matrix.artifact }}"
+            ls -lh "${{ matrix.artifact }}"
+          fi
+
+      # Cache the built binary (if we just built it)
+      - name: Cache built binary
+        if: steps.cache-binary.outputs.cache-hit != 'true' && github.event_name == 'push'
+        uses: actions/cache@v3
+        with:
+          path: ${{ matrix.artifact }}
+          key: ${{ runner.os }}-binary-${{ github.sha }}
 
       - name: Archive binary
         uses: ./.github/actions/rust-archive/
@@ -192,6 +221,3 @@ jobs:
           os: ${{ matrix.os }}
           archive: ${{ matrix.artifact }}
           path: ${{ matrix.artifact }}
-      
-      - name: Map
-        run: ls

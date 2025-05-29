@@ -38,6 +38,6 @@ runs:
       env:
         INPUT_ARCHIVE: ${{ inputs.archive }}
         INPUT_DEB: ${{ inputs.deb }}
-        INPUT_PROFILE: ${{ inputs.profile }}
+        INPUT_PATH: ${{ inputs.path }}
         INPUT_BEFORE: ${{ inputs.before }}
         INPUT_OS: ${{ inputs.os }}
