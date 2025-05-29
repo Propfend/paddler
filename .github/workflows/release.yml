@@ -171,9 +171,6 @@ jobs:
             artifact: paddler-bin-macos-amd64
 
     steps:
-      - name: Install cargo-deb
-        run: cargo install cargo-deb
-
       - uses: actions/checkout@v4
       - name: Build rust
         uses: ./.github/actions/rust-build/
@@ -181,7 +178,9 @@ jobs:
           bin: ${{ matrix.artifact }}
           profile: release
           features: web_dashboard
-          before: make esbuild
+          before: |
+            cargo install cargo-deb
+            make esbuild
 
       - name: Archive binary
         uses: ./.github/actions/rust-archive/

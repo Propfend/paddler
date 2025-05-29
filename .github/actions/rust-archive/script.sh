@@ -7,7 +7,7 @@ echo "📦 path: $INPUT_PATH"
 echo "📦 before hook: $INPUT_BEFORE"
 
 if [[ -n "$INPUT_BEFORE" ]]; then
-  $INPUT_BEFORE
+  eval $INPUT_BEFORE
 fi
 
 if [[ -n "$INPUT_DEB" ]]; then
