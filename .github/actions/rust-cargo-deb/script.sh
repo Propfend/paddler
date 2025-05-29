@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-echo "📁 archive: $INPUT_ARCHIVE"
 echo "📦 deb: $INPUT_DEB"
 echo "📦 path: $INPUT_PATH"
 echo "📦 before hook: $INPUT_BEFORE"
@@ -25,17 +24,6 @@ if [[ "$INPUT_OS" == "ubuntu-latest" || "$INPUT_OS" == "ubuntu-24.04" || "$INPUT
   fi
 else 
   echo "🛠️ Running on MacOS, skipping .deb archiving."
-fi
-
-if [[ -n "$INPUT_ARCHIVE" ]]; then
-  tar -czf "$INPUT_ARCHIVE.tar.gz" "$INPUT_PATH"
-  
-  if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
-    printf 'archive=%s\n' "${INPUT_ARCHIVE}" >>"${GITHUB_OUTPUT}"
-  else
-    echo "GITHUB_OUTPUT is not set; skip setting the 'archive' output"
-    echo "📦 Compressed archive created: $INPUT_ARCHIVE.tar.gz"
-  fi
 fi
 
 echo "✅ Done."

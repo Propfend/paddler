@@ -1,10 +1,6 @@
-name: 'Archives rust project'
-description: 'Archives rust project'
+name: 'cargo-deb action'
+description: 'cargo-deb action'
 inputs:
-  archive:
-    description: 'Archive name (compressed on tar.gz)'
-    required: false
-    default: ""
   deb:
     description: '.deb file name'
     required: false
@@ -36,7 +32,6 @@ runs:
       run: bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/script.sh"
       shell: bash
       env:
-        INPUT_ARCHIVE: ${{ inputs.archive }}
         INPUT_DEB: ${{ inputs.deb }}
         INPUT_PATH: ${{ inputs.path }}
         INPUT_BEFORE: ${{ inputs.before }}

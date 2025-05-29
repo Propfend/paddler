@@ -70,7 +70,6 @@
 #         env:
 #           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
 # name: release
 
 # on:
@@ -187,7 +186,6 @@ jobs:
         with:
           deb: ${{ matrix.artifact }}
           os: ${{ matrix.os }}
-          # archive: ${{ matrix.artifact }}
           path: ${{ matrix.artifact }}
           before: cargo install cargo-deb
 
@@ -216,7 +214,7 @@ jobs:
         if: steps.tag_type.outputs.tag_type != 'INVALID_TAG'
         uses: svenstaro/upload-release-action@v2
         with:
-          file: ${{ matrix.artifact_name }}*
+          file: ${{ matrix.artifact }}*
           file_glob: true
           overwrite: true
           prerelease: ${{ steps.tag_type.outputs.tag_type == 'PRE_RELEASE_TAG' }}
