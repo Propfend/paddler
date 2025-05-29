@@ -23,6 +23,8 @@ if [[ "$INPUT_OS" == "linux" ]]; then
       echo "📦 DEB archive created: $INPUT_DEB.deb"
     fi  
   fi
+else 
+  echo "🛠️ Running on MacOS, skipping .deb archiving."
 fi
 
 if [[ -n "$INPUT_ARCHIVE" ]]; then
