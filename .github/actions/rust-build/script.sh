@@ -7,7 +7,7 @@ echo "🔧 features: $INPUT_FEATURES"
 echo "📦 before hook: $INPUT_BEFORE"
 
 if [[ -n "$INPUT_BEFORE" ]]; then
-  eval $INPUT_BEFORE
+  eval "$INPUT_BEFORE"
 fi
 
 if [[ $INPUT_PROFILE != "release" && $INPUT_PROFILE != "dev" ]]; then
