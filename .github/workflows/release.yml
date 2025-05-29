@@ -206,6 +206,7 @@ jobs:
           else
             echo "prerelease=false" >> $GITHUB_OUTPUT
           fi
+        shell: bash
 
       - name: Map
         run: ls
