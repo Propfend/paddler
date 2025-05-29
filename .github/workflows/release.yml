@@ -192,7 +192,3 @@ jobs:
       
       - name: Map
         run: ls
-        # with:
-        #   deb: ${{ matrix.artifact }}
-        #   archive: ${{ matrix.artifact }}
-        #   path: ${{ matrix.artifact }}

@@ -3,7 +3,7 @@ set -e
 
 echo "📁 archive: $INPUT_ARCHIVE"
 echo "📦 deb: $INPUT_DEB"
-echo "📦 project: $INPUT_PATH"
+echo "📦 path: $INPUT_PATH"
 echo "📦 before hook: $INPUT_BEFORE"
 
 if [[ -n "$INPUT_BEFORE" ]]; then
@@ -23,7 +23,7 @@ if [[ -n "$INPUT_DEB" ]]; then
 fi
 
 if [[ -n "$INPUT_ARCHIVE" ]]; then
-  tar -czf "$INPUT_ARCHIVE.tar.gz" "$INPUT_ARCHIVE"
+  tar -czf "$INPUT_ARCHIVE.tar.gz" "$INPUT_PATH"
   
   if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
     printf 'archive=%s\n' "${INPUT_ARCHIVE}" >>"${GITHUB_OUTPUT}"

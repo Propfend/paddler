@@ -17,6 +17,7 @@ inputs:
     description: 'Before hook'
     required: false
     default: ""
+    
 outputs:
     archive:
       description: "Archived file in .tar.gz"
@@ -33,6 +34,5 @@ runs:
       env:
         INPUT_ARCHIVE: ${{ inputs.archive }}
         INPUT_DEB: ${{ inputs.deb }}
-        INPUT_PROJECT: ${{ inputs.project }}
         INPUT_PROFILE: ${{ inputs.profile }}
         INPUT_BEFORE: ${{ inputs.before }}
