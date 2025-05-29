@@ -19,11 +19,8 @@ inputs:
     default: ""
     
 outputs:
-    archive:
-      description: "Archived file in .tar.gz"
-      value: ${{ steps.files.outputs.archive }}
     deb:
-      description: "Archived file in .tar.gz"
+      description: ".deb file"
       value: ${{ steps.files.outputs.deb }}
 runs:
   using: "composite"
