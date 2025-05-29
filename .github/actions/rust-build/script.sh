@@ -30,7 +30,7 @@ fi
 echo "🚧 Building project..."
 $BUILD_CMD
 
-mv "$BUILD_PATH/paddler" "$INPUT_BIN"
+cp "$BUILD_PATH/paddler" "$INPUT_BIN"
 
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
   printf 'bin=%s\n' "${INPUT_BIN}" >>"${GITHUB_OUTPUT}"
