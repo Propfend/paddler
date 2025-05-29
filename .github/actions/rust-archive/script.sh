@@ -11,7 +11,7 @@ if [[ -n "$INPUT_BEFORE" ]]; then
   eval "$INPUT_BEFORE"
 fi
 
-if [[ "$INPUT_OS" == "ubuntu-latest" || "$INPUT_OS" == "ubuntu-24.04" || "$INPUT_OS" == "ubuntu-22.04" ]]; then
+if [[ "$INPUT_OS" == "ubuntu-latest" || "$INPUT_OS" == "ubuntu-24.04" || "$INPUT_OS" == "ubuntu-22.04" || "$INPUT_OS" == "ubuntu-24.04-arm" || "$INPUT_OS" == "ubuntu-22.04-arm" ]]; then
   if [[ -n "$INPUT_DEB" ]]; then
     echo "🛠️ Building DEB package..."
     cargo deb --no-build --output $INPUT_DEB.deb
