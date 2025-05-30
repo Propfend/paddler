@@ -157,7 +157,7 @@ on:
 jobs:
   check:
       runs-on: ubuntu-latest
-      
+
       steps:
         - uses: actions/checkout@v4
 
@@ -184,7 +184,9 @@ jobs:
           - os: macos-latest
             artifact: paddler-bin-macos-amd64
 
-    steps:
+    steps:        
+      - uses: actions/checkout@v4
+      
       - name: Build rust
         if: steps.cache-binary.outputs.cache-hit != 'true'
         uses: ./.github/actions/rust-build/
