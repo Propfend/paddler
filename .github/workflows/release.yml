@@ -155,7 +155,22 @@ on:
       - v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+
 
 jobs:
+  check:
+      runs-on: ubuntu-latest
+      
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Check licenses
+          uses: EmbarkStudios/cargo-deny-action@v2
+          with:
+            log-level: warn
+            command: check
+            arguments: --all-features --workspace
+            command-arguments: license
+
   release:
+    needs: check
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -170,16 +185,6 @@ jobs:
             artifact: paddler-bin-macos-amd64
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Check licenses
-        uses: EmbarkStudios/cargo-deny-action@v2
-        with:
-          log-level: warn
-          command: check
-          arguments: --all-features --workspace
-          command-arguments: license
-
       - name: Build rust
         if: steps.cache-binary.outputs.cache-hit != 'true'
         uses: ./.github/actions/rust-build/
