@@ -172,9 +172,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install cargo-deny
+        run: cargo install cargo-deny
+
       - name: Verify licenses
         run: cargo deny check license
-        
+
       - name: Build rust
         if: steps.cache-binary.outputs.cache-hit != 'true'
         uses: ./.github/actions/rust-build/
