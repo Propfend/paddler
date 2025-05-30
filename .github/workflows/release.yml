@@ -179,7 +179,12 @@ jobs:
           bin: ${{ matrix.artifact }}
           profile: release
           features: web_dashboard
-          before: make esbuild
+          before: |
+            make esbuild
+            cargo install cargo-deny
+
+      - name: Verify licenses
+        run: cargo deny check license
 
       - name: Archive binary
         uses: ./.github/actions/rust-cargo-deb/
@@ -217,4 +222,11 @@ jobs:
           overwrite: true
           prerelease: ${{ steps.tag_type.outputs.tag_type == 'PRE_RELEASE_TAG' }}
           tag: ${{ github.ref }}
+
+      # - name: Run GoReleaser
+      #   uses: goreleaser/goreleaser-action@v6
+      #   with:
+      #     distribution: goreleaser
+      #     version: "~> v2"
+      #     args: release --clean
           
