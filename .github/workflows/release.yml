@@ -172,11 +172,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install cargo-deny
-        run: cargo install cargo-deny
-
-      - name: Verify licenses
-        run: cargo deny check license
+      - name: Check licenses
+        uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          log-level: warn
+          command: check
+          arguments: --all-features --workspace
+          command-arguments: license
 
       - name: Build rust
         if: steps.cache-binary.outputs.cache-hit != 'true'
