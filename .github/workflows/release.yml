@@ -214,28 +214,6 @@ jobs:
             ./${{ matrix.artifact }}
           outPath: ${{ matrix.artifact }}.tar.gz
 
-      - name: Determine tag type
-        id: tag_type
-        run: |
-          if [[ ${{ github.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+-rc[0-9]+$ ]]; then
-            echo "tag_type=PRE_RELEASE_TAG" >> $GITHUB_OUTPUT
-          elif [[ ${{ github.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "tag_type=RELEASE_TAG" >> $GITHUB_OUTPUT
-          else
-            echo "tag_type=INVALID_TAG" >> $GITHUB_OUTPUT
-          fi
-        shell: bash
-
-      - name: Upload artifacts
-        if: steps.tag_type.outputs.tag_type != 'INVALID_TAG'
-        uses: svenstaro/upload-release-action@v2
-        with:
-          file: ${{ matrix.artifact }}*
-          file_glob: true
-          overwrite: true
-          prerelease: ${{ steps.tag_type.outputs.tag_type == 'PRE_RELEASE_TAG' }}
-          tag: ${{ github.ref }}
-
       - name: Update Homebrew formula
         if: | 
           ${{ matrix.artifact }} == "ubuntu-latest" ||
@@ -262,3 +240,25 @@ jobs:
           revision: ${{github.sha}}
           # Optional, if don't want to check for already open PRs
           # force: false # true
+
+      - name: Determine tag type
+        id: tag_type
+        run: |
+          if [[ ${{ github.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+-rc[0-9]+$ ]]; then
+            echo "tag_type=PRE_RELEASE_TAG" >> $GITHUB_OUTPUT
+          elif [[ ${{ github.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "tag_type=RELEASE_TAG" >> $GITHUB_OUTPUT
+          else
+            echo "tag_type=INVALID_TAG" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
+      - name: Upload artifacts
+        if: steps.tag_type.outputs.tag_type != 'INVALID_TAG'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: ${{ matrix.artifact }}*
+          file_glob: true
+          overwrite: true
+          prerelease: ${{ steps.tag_type.outputs.tag_type == 'PRE_RELEASE_TAG' }}
+          tag: ${{ github.ref }}
