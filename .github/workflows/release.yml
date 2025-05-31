@@ -188,7 +188,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build rust
-        if: steps.cache-binary.outputs.cache-hit != 'true'
         uses: ./.github/actions/rust-build/
         with:
           bin: ${{ matrix.artifact }}
@@ -215,30 +214,48 @@ jobs:
             ./${{ matrix.artifact }}
           outPath: ${{ matrix.artifact }}.tar.gz
 
-      - name: Determine release type
+      - name: Determine tag type
         id: tag_type
         run: |
-          if [[ ${{ github.ref }} =~ -rc[0-9]+$ ]]; then
-            echo "prerelease=true" >> $GITHUB_OUTPUT
+          if [[ ${{ github.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+-rc[0-9]+$ ]]; then
+            echo "tag_type=PRE_RELEASE_TAG" >> $GITHUB_OUTPUT
+          elif [[ ${{ github.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "tag_type=RELEASE_TAG" >> $GITHUB_OUTPUT
           else
-            echo "prerelease=false" >> $GITHUB_OUTPUT
+            echo "tag_type=INVALID_TAG" >> $GITHUB_OUTPUT
           fi
         shell: bash
 
-      - name: upload artifacts
-        if: steps.tag_type.outputs.prerelease != 'INVALID_TAG'
+      - name: Upload artifacts
+        if: steps.tag_type.outputs.tag_type != 'INVALID_TAG'
         uses: svenstaro/upload-release-action@v2
         with:
           file: ${{ matrix.artifact }}*
           file_glob: true
           overwrite: true
-          prerelease: ${{ steps.tag_type.outputs.prerelease == 'PRE_RELEASE_TAG' }}
+          prerelease: ${{ steps.tag_type.outputs.tag_type == 'PRE_RELEASE_TAG' }}
           tag: ${{ github.ref }}
 
-      # - name: Run GoReleaser
-      #   uses: goreleaser/goreleaser-action@v6
-      #   with:
-      #     distribution: goreleaser
-      #     version: "~> v2"
-      #     args: release --clean
-          
+      - name: Update Homebrew formula
+        uses: dawidd6/action-homebrew-bump-formula@v4
+        with:
+          # Required, custom GitHub access token with the 'public_repo' and 'workflow' scopes
+          token: ${{ secrets.TOKEN }}
+          # Optional, will commit with this user name
+          # user_name: name
+          # # Optional, will commit with this user email
+          # user_email: email@example.com
+          # Optional, will create tap repo fork in organization
+          org: intentt
+          # Optional, use the origin repository instead of forking
+          # no_fork: false
+          # Optional, defaults to homebrew/core
+          tap: intentt/homebrew-paddler
+          # Formula name, required
+          formula: paddler
+          # Optional, will be determined automatically
+          tag: ${{ github.ref }}
+          # Optional, will be determined automatically
+          revision: ${{github.sha}}
+          # Optional, if don't want to check for already open PRs
+          # force: false # true
