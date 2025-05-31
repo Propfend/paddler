@@ -214,30 +214,29 @@ jobs:
             ./${{ matrix.artifact }}
           outPath: ${{ matrix.artifact }}.tar.gz
 
-      - name: Update Homebrew formula
+      - name: Publish to Homebrew
         if: | 
           ${{ matrix.artifact }} == "ubuntu-latest" ||
           ${{ matrix.artifact }} == "macos-latest" 
         uses: dawidd6/action-homebrew-bump-formula@v4
         with:
           # Required, custom GitHub access token with the 'public_repo' and 'workflow' scopes
-          token: ${{ secrets.TOKEN }}
+          token: ${{ secrets.HOMEBREW_TOKEN }}
           # Optional, will commit with this user name
           # user_name: name
           # # Optional, will commit with this user email
           # user_email: email@example.com
           # Optional, will create tap repo fork in organization
-          org: intentt
+          org: distantmagic/paddler
           # Optional, use the origin repository instead of forking
           # no_fork: false
           # Optional, defaults to homebrew/core
-          tap: intentt/homebrew-paddler
-          # Formula name, required
+          tap: intentt/homebrew-tap
           formula: paddler
           # Optional, will be determined automatically
           tag: ${{ github.ref }}
           # Optional, will be determined automatically
-          revision: ${{github.sha}}
+          # revision: ${{github.sha}}
           # Optional, if don't want to check for already open PRs
           # force: false # true
 
