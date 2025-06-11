@@ -53,6 +53,9 @@ mod tests {
 
         let proxy_service = ProxyService::new(false, true, upstream_peer_pool.into());
 
+        assert_eq!(upstream_peer.clone().slots_idle, 7);
+        assert_eq!(upstream_peer.slots_processing, 1);
+
         proxy_service.release_slot(&mut ctx)?;
 
         assert!(!ctx.slot_taken);
