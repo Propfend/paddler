@@ -1,9 +1,7 @@
 /*.db
 /esbuild-meta.json
 /godepgraph.png
-/node_modules
-/paddler
-/paddler-bin-linux-x64
-/snapshots
-/static
+paddler/node_modules
+paddler/static
+paddler/esbuild-meta.json
 /target
