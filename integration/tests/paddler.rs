@@ -349,64 +349,6 @@ async fn display_agent_slots(
     Ok(())
 }
 
-#[when(expr = r"{word} stops running and observing {word}, unregistered from {word}")]
-async fn agent_is_not_running(world: &mut PaddlerWorld, agent_name: String) -> Result<()> {
-    match agent_name.as_str() {
-        "agent-1" => {
-            if let Some(agent) = world.agents.get_mut(0) {
-                kill_process(agent).await;
-                world.agents.insert(0, None);
-            }
-        }
-        "agent-2" => {
-            if let Some(agent) = world.agents.get_mut(1) {
-                kill_process(agent).await;
-                world.agents.push(None);
-            }
-        }
-        _ => (),
-    }
-
-    Ok(())
-}
-
-#[then(expr = "{word} in {word} must report that {word} cannot fetch {word} in {word}")]
-async fn agent_cannot_fetch_llamacpp(
-    _world: &mut PaddlerWorld,
-    _balancer_name: String,
-    balancer_addr: String,
-    agent_name: String,
-    _llamacpp_name: String,
-    _llamacpp_addr: String,
-) -> Result<()> {
-    tokio::time::sleep(std::time::Duration::from_secs(15)).await;
-
-    let mut response = serde_json::from_str::<UpstreamPeerPool>(
-        &reqwest::get(format!("http://{}/api/v1/agents", balancer_addr))
-            .await?
-            .text()
-            .await?,
-    )?;
-
-    let agents = response.agents.get_mut()?;
-
-    let agent = agents
-        .into_iter()
-        .find(|agent| agent.agent_name == Some(agent_name.clone()));
-
-    if let Some(agent) = agent {
-        assert!(agent.error.is_some());
-        assert_eq!(
-            agent.error,
-            Some("Request error: error sending request".to_string())
-        );
-        assert_eq!(agent.is_authorized, None);
-        assert_eq!(agent.is_slots_endpoint_enabled, None);
-    }
-
-    Ok(())
-}
-
 #[when(expr = r"{int} request(s) is/are proxied to {word} in {word}")]
 async fn proxy_balancer(
     _world: &mut PaddlerWorld,

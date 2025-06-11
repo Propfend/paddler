@@ -1,7 +1,10 @@
 /*.db
 /esbuild-meta.json
 /godepgraph.png
-paddler/node_modules
-paddler/static
-paddler/esbuild-meta.json
+/paddler/node_modules
+/paddler/static
+/paddler/esbuild-meta.json
+/paddler/esbuild-meta.json
+/integration/data
+/integration/prometheus.yml
 /target

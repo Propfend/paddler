@@ -14,7 +14,7 @@ node_modules: package-lock.json
 # -----------------------------------------------------------------------------
 
 .PHONY: test
-test:
+test: build
 	cargo test
 
 .PHONY: build
