@@ -12,7 +12,7 @@ test:
 	$(MAKE) -C paddler test
 
 .PHONY: build
-build: esbuild
+build:
 	$(MAKE) -C integration build
 	$(MAKE) -C paddler build
 

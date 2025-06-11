@@ -62,7 +62,7 @@ impl UpstreamPeerPool {
                     return Ok(false);
                 }
 
-                peer.release_slot();
+                peer.release_slot()?;
 
                 return Ok(true);
             }
@@ -92,7 +92,7 @@ impl UpstreamPeerPool {
     pub fn take_slot(&self, agent_id: &str) -> Result<bool> {
         self.with_agents_write(|agents| {
             if let Some(peer) = agents.iter_mut().find(|p| p.agent_id == agent_id) {
-                peer.take_slot();
+                peer.take_slot()?;
 
                 Ok(true)
             } else {

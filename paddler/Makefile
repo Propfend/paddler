@@ -18,7 +18,7 @@ test: build
 	cargo test
 
 .PHONY: build
-build:
+build: esbuild
 	cargo build --package paddler --features web_dashboard --release
 
 .PHONY: esbuild
