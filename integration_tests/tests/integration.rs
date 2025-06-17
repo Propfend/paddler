@@ -1,10 +1,7 @@
-mod balancer_world;
-mod expression;
-mod llamacpp_instance;
+mod tests;
+mod outils;
 
-use cucumber::World as _;
-
-use self::balancer_world::BalancerWorld;
+use crate::balancer::balancer_world::BalancerWorld;
 
 #[tokio::main]
 async fn main() {

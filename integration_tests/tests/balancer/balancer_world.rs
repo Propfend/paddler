@@ -4,7 +4,7 @@ use dashmap::DashMap;
 use reqwest::Response;
 use tokio::process::Child;
 
-use super::llamacpp_instance::LlamaCppInstance;
+use crate::outils::llamacpp_instance::LlamaCppInstance;
 
 #[derive(Debug, Default, World)]
 pub struct BalancerWorld {
