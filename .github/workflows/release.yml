@@ -66,6 +66,10 @@ jobs:
           os: ${{ matrix.os }}
           before: cargo install cargo-deb
 
+      - name: Verify MSRV
+        run: |
+          cargo install cargo-msrv --locked
+          cargo msrv find
       - name: upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
