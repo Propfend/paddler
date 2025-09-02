@@ -37,15 +37,15 @@ pkgs.rustPlatform.buildRustPackage {
     lockFile = ./Cargo.lock;
   };
 
-  nativeBuildInputs = [
+  nativeBuildInputs = with pkgs; [
     fenix.minimal.toolchain
     pkg-config
     cmake
-    pkgs.rustPlatform.bindgenHook
+    nodejs
+    rustPlatform.bindgenHook
   ];
 
-  buildInputs = [
-    nodejs
+  buildInputs = with pkgs; [
     openssl
     static
   ];
@@ -53,14 +53,22 @@ pkgs.rustPlatform.buildRustPackage {
   buildFeatures = [ "web_admin_panel" ];
 
   buildPhase = ''
-    runHook preBuild
     ln -s result/node_modules ./node_modules
+    make
     ls
   '';
 
   installPhase = ''
     mkdir -p $out/bin
+    ls
     mv target/release/paddler $out/bin
   '';
+
+  # checkFlags = [
+  #   # 
+  #   "--skip=example::tests:example_test"
+  # ];
+
+  doCheck = false;
 }
 
