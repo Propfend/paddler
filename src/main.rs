@@ -14,6 +14,12 @@ use tokio::sync::oneshot;
 #[cfg(feature = "web_admin_panel")]
 pub const ESBUILD_META_CONTENTS: &str = include_str!("../esbuild-meta.json");
 
+pub const CUDA_DISCLAIMER_DOCS: &str = " \
+    This software includes NVIDIA CUDA runtime components, subject to the NVIDIA CUDA Toolkit End User License Agreement: \
+    https://docs.nvidia.com/cuda/eula/index.html\n\
+    This software contains source code provided by NVIDIA Corporation.\n\
+    Paddler is not affiliated with, endorsed by, or sponsored by NVIDIA Corporation.";
+
 #[derive(Parser)]
 #[command(arg_required_else_help(true), version, about, long_about = None)]
 /// LLMOps platform for hosting and scaling open-source LLMs in your own infrastructure
@@ -22,10 +28,17 @@ struct Cli {
     command: Option<Commands>,
 }
 
+// CMAKE_CUDA_ARCHITECTURES=native CMAKE_CUDA_COMPILER_FORCED=ON CMAKE_CUDA_COMPILER=/run/current-system/sw/bin/nvcc CC=/nix/store/p20mdvw9izjilv86xlj32cghafhpnrks-gcc-wrapper-12.4.0/bin/gcc CCX=/nix/store/p20mdvw9izjilv86xlj32cghafhpnrks-gcc-wrapper-12.4.0/bin/gcc
+//   CMAKE_GENERATOR="Unix Makefiles" CUDACXX=/run/current-system/sw/bin/nvcc cargo build --features cuda && nix-ld target/debug/paddler -h
+
 #[expect(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 enum Commands {
     /// Generates tokens and embeddings; connects to the balancer
+    #[cfg_attr(
+        feature = "cuda",
+        doc = CUDA_DISCLAIMER_DOCS
+    )]
     Agent(Agent),
     /// Distributes incoming requests among agents
     Balancer(Balancer),
